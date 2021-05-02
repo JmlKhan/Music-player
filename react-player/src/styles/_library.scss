@@ -10,6 +10,7 @@
     transform: translateX(-100%);
     transition: all 0.5s ease;
     opacity: 0;
+    background-color: rgb(204, 234, 240);
 }
 h2{
     padding: 2rem;
@@ -20,7 +21,7 @@ h2{
     padding: 1rem 2rem 1rem 2rem;
     cursor: pointer;
     img{
-        width: 50%;
+        width: 70%;
     }
     &:hover{
         background: rgb(204, 234, 240);
@@ -44,4 +45,10 @@ h2{
 .active-Library {
     transform: translateX(0%);
     opacity: 1;
+}
+@media screen and (max-width: 768px) {
+    .library{
+        width: 100%;
+        
+    }
 }

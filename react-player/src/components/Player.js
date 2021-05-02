@@ -7,7 +7,8 @@ import {faPlay,
       } from '@fortawesome/free-solid-svg-icons';
 
 const Player = ({currentSong, isPlaying, setIsPlaying, 
-                audioRef, songInfo, setSongInfo, songs, setCurrentSong}) => {
+                audioRef, songInfo, setSongInfo, songs, 
+                setCurrentSong, setSongs}) => {
  
   //Event Handler
   const playSongHandler = () => {
@@ -31,19 +32,42 @@ const dragHandler = (e) => {
   setSongInfo({...songInfo, currentTime: e.target.value})
 };
  
-const skipTrackHandler = (direction) => { 
+const skipTrackHandler = async (direction) => { 
    let currentIndex = songs.findIndex((song) => song.id === currentSong.id );
    if (direction === 'skip-forward'){
-     setCurrentSong(songs[(currentIndex + 1) % songs.length])
+    await setCurrentSong(songs[(currentIndex + 1) % songs.length]);
+    activeLibraryHandler(songs[(currentIndex + 1) % songs.length]); 
    }
    if (direction === 'skip-back'){
      if((currentIndex-1) % songs.length === -1 ){
-        setCurrentSong(songs[songs.length-1]);
+       await setCurrentSong(songs[songs.length-1]);
+       activeLibraryHandler(songs[songs.length-1]);
+        if(isPlaying) audioRef.current.play();
         return;
      }
-    setCurrentSong(songs[(currentIndex - 1) % songs.length])
-  }; 
+    await setCurrentSong(songs[(currentIndex - 1) % songs.length]);
+    activeLibraryHandler(songs[(currentIndex - 1) % songs.length]);
+  }
+  if(isPlaying) audioRef.current.play();
+};
+//useEffect
+const activeLibraryHandler = (nextPrev) => { 
+  const newSong = songs.map((song) => {
+    if(song.id === nextPrev.id){
+        return {
+            ...song,
+            Active: true,
+        };
+    }else{
+        return {
+            ...song,
+            Active: false,
+        };
+    };
+});
+setSongs(newSong);
 }
+  
 
   
   return (  
@@ -56,7 +80,7 @@ const skipTrackHandler = (direction) => {
             value = {songInfo.currentTime}
             onChange = {dragHandler}
             type="range"/>
-            <p>{getTime(songInfo.duration)}</p>
+            <p>{songInfo.duration ? getTime(songInfo.duration) : "0:00"}</p>
           </div> 
           <div className="play-control">
             <FontAwesomeIcon
